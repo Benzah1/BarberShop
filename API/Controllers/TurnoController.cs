@@ -19,7 +19,7 @@ public class TurnosController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var turnos = await _turnoService.GetAllTurns();
+        var turnos = await _turnoService.GetAllTurns(); // Devuelve TurnoResponseDTO[]
         return Ok(turnos);
     }
 
@@ -27,8 +27,8 @@ public class TurnosController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var turno = await _turnoService.GetTurnById(id);
-        return Ok(turno); // Si no existe, el service lanza NotFoundException
+        var turno = await _turnoService.GetTurnById(id); // Devuelve TurnoResponseDTO
+        return Ok(turno);
     }
 
     // POST: api/turnos
@@ -36,7 +36,7 @@ public class TurnosController : ControllerBase
     public async Task<IActionResult> Create([FromBody] TurnoDTO dto)
     {
         await _turnoService.CreateTurn(dto);
-        return Ok("Turno Creado Exitosamente");
+        return Ok("Turno creado exitosamente");
     }
 
     // PUT: api/turnos/{id}
@@ -55,4 +55,3 @@ public class TurnosController : ControllerBase
         return Ok("Su hora se ha cancelado correctamente");
     }
 }
-

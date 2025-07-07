@@ -16,19 +16,44 @@ public class TurnoService : ITurnoService
         _context = context;
     }
 
-    public async Task<List<Turno>> GetAllTurns()
+    public async Task<List<TurnoResponseDTO>> GetAllTurns()
     {
-        return await _context.Turnos.ToListAsync();
+        return await _context.Turnos
+            .Include(t => t.User)
+            .Select(t => new TurnoResponseDTO
+            {
+                Id = t.Id,
+                UserName = t.User.UserName,
+                UserEmail = t.User.UserEmail,
+                Barber = t.Barber,
+                Service = t.Service,
+                TimeDate = t.TimeDate,
+                Confirmed = t.Confirmed
+            })
+            .ToListAsync();
     }
 
-    public async Task<Turno?> GetTurnById(int id)
+    public async Task<TurnoResponseDTO> GetTurnById(int id)
     {
-        var turno = await _context.Turnos.FindAsync(id);
+        var turno = await _context.Turnos
+            .Include(t => t.User) // Incluye los datos del usuario relacionado
+            .FirstOrDefaultAsync(t => t.Id == id);
+
         if (turno == null)
-            throw new NotFoundException("Turno No Encontrado.");
+            throw new NotFoundException("Turno no encontrado.");
 
-        return turno;
+        return new TurnoResponseDTO
+        {
+            Id = turno.Id,
+            UserName = turno.User.UserName,
+            UserEmail = turno.User.UserEmail,
+            Barber = turno.Barber,
+            Service = turno.Service,
+            TimeDate = turno.TimeDate,
+            Confirmed = turno.Confirmed
+        };
     }
+
 
     public async Task CreateTurn(TurnoDTO dto)
     {
@@ -40,8 +65,7 @@ public class TurnoService : ITurnoService
 
         var turno = new Turno
         {
-            ClientName = dto.ClientName,
-            ClientEmail = dto.ClientEmail,
+           UserId = dto.UserId,
             Barber = dto.Barber,
             Service = dto.Service,
             TimeDate = dto.TimeDate,
@@ -58,8 +82,7 @@ public class TurnoService : ITurnoService
         if (turno == null)
             throw new NotFoundException("Turno No Encontrado.");
 
-        turno.ClientName = dto.ClientName;
-        turno.ClientEmail = dto.ClientEmail;
+        turno.UserId = dto.UserId;
         turno.Barber = dto.Barber;
         turno.Service = dto.Service;
         turno.TimeDate = dto.TimeDate;

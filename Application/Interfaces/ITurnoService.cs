@@ -1,16 +1,14 @@
 ﻿using Application.DTOs;
-using Domain.Entities;
-
 
 namespace Application.Interfaces
 {
     public interface ITurnoService
     {
         // Obtener todos los turnos
-        Task<List<Turno>> GetAllTurns();
+        Task<List<TurnoResponseDTO>> GetAllTurns();
 
         // Obtener un turno por su ID
-        Task<Turno?> GetTurnById(int id);
+        Task<TurnoResponseDTO> GetTurnById(int id);
 
         // Crear un nuevo turno
         Task CreateTurn(TurnoDTO dto);

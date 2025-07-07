@@ -8,8 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
+using BCrypt.Net;
 
 namespace Infrastructure.Services;
 
@@ -35,7 +35,7 @@ public class AuthService : IAuthService
             UserName = dto.Name,
             UserEmail = dto.Email,
             Role = dto.Role,
-            PasswordHash = HashPassword(dto.Password)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
         };
 
         _context.Users.Add(user);
@@ -45,24 +45,10 @@ public class AuthService : IAuthService
     public async Task<string> LoginUser(LoginDTO dto)
     {
         var user = await _context.Users.SingleOrDefaultAsync(u => u.UserEmail == dto.Email);
-        if (user == null || !VerifyPassword(dto.PasswordHash, user.PasswordHash))
+        if (user == null || !BCrypt.Net.BCrypt.Verify(dto.PasswordHash, user.PasswordHash))
             throw new BadRequestException("Correo o contraseña incorrectos.");
 
         return GenerateJwtToken(user);
-    }
-
-    // Hasheo básico (puedes cambiarlo a BCrypt si lo deseas)
-    private string HashPassword(string password)
-    {
-        using var sha256 = SHA256.Create();
-        var bytes = Encoding.UTF8.GetBytes(password);
-        var hash = sha256.ComputeHash(bytes);
-        return Convert.ToBase64String(hash);
-    }
-
-    private bool VerifyPassword(string inputPassword, string storedHash)
-    {
-        return HashPassword(inputPassword) == storedHash;
     }
 
     private string GenerateJwtToken(User user)
