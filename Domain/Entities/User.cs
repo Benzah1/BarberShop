@@ -19,5 +19,8 @@ namespace Domain.Entities
 
         public string Role { get; set; } = null!;
 
+        // Relación con Turnos
+        public List<Turno> Turnos { get; set; } = new();
+
     }
 }

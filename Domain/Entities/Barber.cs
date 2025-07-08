@@ -14,5 +14,8 @@ namespace Domain.Entities
         public string Phone { get; set; } = null!;
         public bool IsActive { get; set; } = true;
 
+        // Relación con Turnos
+        public List<Turno> Turnos { get; set; } = new();
+
     }
 }

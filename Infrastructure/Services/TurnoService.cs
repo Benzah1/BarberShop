@@ -25,7 +25,7 @@ public class TurnoService : ITurnoService
                 Id = t.Id,
                 UserName = t.User.UserName,
                 UserEmail = t.User.UserEmail,
-                Barber = t.Barber,
+                BarberName = t.Barber.Name,
                 Service = t.Service,
                 TimeDate = t.TimeDate,
                 Confirmed = t.Confirmed
@@ -37,6 +37,7 @@ public class TurnoService : ITurnoService
     {
         var turno = await _context.Turnos
             .Include(t => t.User) // Incluye los datos del usuario relacionado
+            .Include(t => t.Barber)
             .FirstOrDefaultAsync(t => t.Id == id);
 
         if (turno == null)
@@ -47,7 +48,7 @@ public class TurnoService : ITurnoService
             Id = turno.Id,
             UserName = turno.User.UserName,
             UserEmail = turno.User.UserEmail,
-            Barber = turno.Barber,
+            BarberName = turno.Barber.Name,
             Service = turno.Service,
             TimeDate = turno.TimeDate,
             Confirmed = turno.Confirmed
@@ -58,15 +59,18 @@ public class TurnoService : ITurnoService
     public async Task CreateTurn(TurnoDTO dto)
     {
         var exists = await _context.Turnos.AnyAsync(t =>
-            t.Barber == dto.Barber && t.TimeDate == dto.TimeDate);
+            t.BarberId == dto.BarberId && t.TimeDate == dto.TimeDate);
 
         if (exists)
             throw new BadRequestException("Esta Hora ya fue tomada. Por favor elija otra");
 
+
+        
+
         var turno = new Turno
         {
            UserId = dto.UserId,
-            Barber = dto.Barber,
+            BarberId = dto.BarberId,
             Service = dto.Service,
             TimeDate = dto.TimeDate,
             Confirmed = dto.Confirmed
@@ -83,7 +87,7 @@ public class TurnoService : ITurnoService
             throw new NotFoundException("Turno No Encontrado.");
 
         turno.UserId = dto.UserId;
-        turno.Barber = dto.Barber;
+        turno.BarberId = dto.BarberId;
         turno.Service = dto.Service;
         turno.TimeDate = dto.TimeDate;
         turno.Confirmed = dto.Confirmed;
