@@ -14,6 +14,7 @@ namespace Infrastructure.Persistence
         public DbSet<Turno> Turnos => Set<Turno>();
         public DbSet<User> Users => Set<User>();
         public DbSet<Barber> Barbers => Set<Barber>();
+        public DbSet<Service> Services => Set<Service>();
 
     }
 }

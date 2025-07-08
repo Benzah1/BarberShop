@@ -8,7 +8,7 @@ public class TurnoResponseDTO
     public string UserName { get; set; } = null!;
     public string UserEmail { get; set; } = null!;
 
-    // Datos del Barber
+    // Datos del Barbero
     public string BarberName { get; set; } = null!;
 
     // Turno

@@ -24,6 +24,7 @@ builder.Services.AddScoped<ITurnoService, TurnoService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBarberService, BarberService>();
+builder.Services.AddScoped<IServiceService, ServiceService>();
 
 
 

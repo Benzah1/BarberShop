@@ -16,6 +16,9 @@ namespace Domain.Entities
 
         // Relación con Turnos
         public List<Turno> Turnos { get; set; } = new();
+        //Relacion con services
+        public List<Service> Services { get; set; } = new();
+
 
     }
 }
