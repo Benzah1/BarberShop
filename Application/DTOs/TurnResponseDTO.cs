@@ -11,8 +11,12 @@ public class TurnoResponseDTO
     // Datos del Barbero
     public string BarberName { get; set; } = null!;
 
+    // Datos del servicio
+    public string ServiceName { get; set; } = null!;
+    public decimal ServicePrice { get; set; }
+
+
     // Turno
-    public string Service { get; set; } = null!;
     public DateTime TimeDate { get; set; }
     public bool Confirmed { get; set; }
 }

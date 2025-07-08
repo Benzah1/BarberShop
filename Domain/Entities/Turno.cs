@@ -8,7 +8,8 @@ public class Turno
     public User User { get; set; } = null!;
     public int BarberId { get; set; }
     public Barber Barber { get; set; } = null!;
-    public string Service { get; set; } = null!;
+    public int ServiceId { get; set; }
+    public Service Service { get; set; } = null!;
     public DateTime TimeDate { get; set; }
     public bool Confirmed { get; set; } = false;
 }

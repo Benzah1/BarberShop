@@ -4,6 +4,7 @@ using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(TurnoContext))]
-    partial class TurnoContextModelSnapshot : ModelSnapshot
+    [Migration("20250708232529_LinkTurnoWithService")]
+    partial class LinkTurnoWithService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,7 +164,7 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Service", "Service")
-                        .WithMany("Turnos")
+                        .WithMany()
                         .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -183,11 +186,6 @@ namespace Infrastructure.Migrations
                 {
                     b.Navigation("Services");
 
-                    b.Navigation("Turnos");
-                });
-
-            modelBuilder.Entity("Domain.Entities.Service", b =>
-                {
                     b.Navigation("Turnos");
                 });
 

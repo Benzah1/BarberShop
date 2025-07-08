@@ -17,5 +17,8 @@ namespace Domain.Entities
         // Relación con Barber
         public int BarberId { get; set; }
         public Barber Barber { get; set; } = null!;
+
+        // Relación con Turnos
+        public List<Turno> Turnos { get; set; } = new();
     }
 }

@@ -20,13 +20,16 @@ public class TurnoService : ITurnoService
     {
         return await _context.Turnos
             .Include(t => t.User)
+            .Include(t => t.Barber)
+            .Include(t => t.Service)
             .Select(t => new TurnoResponseDTO
             {
                 Id = t.Id,
                 UserName = t.User.UserName,
                 UserEmail = t.User.UserEmail,
                 BarberName = t.Barber.Name,
-                Service = t.Service,
+                ServiceName = t.Service.Name,
+                ServicePrice = t.Service.Price,
                 TimeDate = t.TimeDate,
                 Confirmed = t.Confirmed
             })
@@ -38,6 +41,7 @@ public class TurnoService : ITurnoService
         var turno = await _context.Turnos
             .Include(t => t.User) // Incluye los datos del usuario relacionado
             .Include(t => t.Barber)
+            .Include(t => t.Service)
             .FirstOrDefaultAsync(t => t.Id == id);
 
         if (turno == null)
@@ -49,7 +53,8 @@ public class TurnoService : ITurnoService
             UserName = turno.User.UserName,
             UserEmail = turno.User.UserEmail,
             BarberName = turno.Barber.Name,
-            Service = turno.Service,
+            ServiceName = turno.Service.Name,
+            ServicePrice = turno.Service.Price,
             TimeDate = turno.TimeDate,
             Confirmed = turno.Confirmed
         };
@@ -71,7 +76,7 @@ public class TurnoService : ITurnoService
         {
            UserId = dto.UserId,
             BarberId = dto.BarberId,
-            Service = dto.Service,
+            ServiceId = dto.ServiceId,
             TimeDate = dto.TimeDate,
             Confirmed = dto.Confirmed
         };
@@ -88,7 +93,7 @@ public class TurnoService : ITurnoService
 
         turno.UserId = dto.UserId;
         turno.BarberId = dto.BarberId;
-        turno.Service = dto.Service;
+        turno.ServiceId = dto.ServiceId;
         turno.TimeDate = dto.TimeDate;
         turno.Confirmed = dto.Confirmed;
 

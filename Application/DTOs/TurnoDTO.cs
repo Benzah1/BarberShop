@@ -6,7 +6,7 @@ namespace Application.DTOs
     {
         public int UserId { get; set; }
         public int BarberId { get; set; }
-        public string Service { get; set; } = null!;
+        public int ServiceId { get; set; }
         public DateTime TimeDate { get; set; }
         public bool Confirmed { get; set; } = false;
     }
