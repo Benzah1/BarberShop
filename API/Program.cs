@@ -22,6 +22,7 @@ builder.Services.AddDbContext<TurnoContext>(o =>
 
 builder.Services.AddScoped<ITurnoService, TurnoService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 
