@@ -19,6 +19,10 @@ namespace Domain.Entities
 
         public string Role { get; set; } = null!;
 
+        public bool EmailConfirmed { get; set; } = false;
+        public string? EmailVerificationCode { get; set; }
+        public DateTime? EmailVerificationExpiry { get; set; }
+
         // Relación con Turnos
         public List<Turno> Turnos { get; set; } = new();
 

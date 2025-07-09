@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
@@ -19,6 +20,11 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
     {
+
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+
         await _authService.RegisterUser(dto);
         return Ok("Usuario registrado correctamente.");
     }
@@ -27,8 +33,20 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDTO dto)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         var token = await _authService.LoginUser(dto);
         return Ok(new { token });
     }
+
+    [HttpGet("verify")]
+    public async Task<IActionResult> VerifyEmail([FromQuery] string email, [FromQuery] string code)
+    {
+        await _authService.ConfirmEmail(email, code);
+        return Ok("✅ ¡Correo verificado correctamente!");
+    }
+
+
 }
 

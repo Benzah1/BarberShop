@@ -26,6 +26,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBarberService, BarberService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<IBarberAvailabilityService, BarberAvailabilityService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 

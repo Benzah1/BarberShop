@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
-    public interface IAuthService
+    public interface IEmailService
     {
-        Task RegisterUser(RegisterDTO dto);
-
-        Task<string> LoginUser(LoginDTO dto);
-        Task ConfirmEmail(string email, string code);
+        Task SendEmail(EmailDTO dto);
     }
 }
