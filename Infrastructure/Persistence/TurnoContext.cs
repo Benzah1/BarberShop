@@ -15,6 +15,19 @@ namespace Infrastructure.Persistence
         public DbSet<User> Users => Set<User>();
         public DbSet<Barber> Barbers => Set<Barber>();
         public DbSet<Service> Services => Set<Service>();
+        public DbSet<BarberAvailabilityRule> Rules => Set<BarberAvailabilityRule>();
+        public DbSet<BarberAvailabilityDay> Days => Set<BarberAvailabilityDay>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<BarberAvailabilityDay>()
+                .HasOne(d => d.AvailabilityRule)
+                .WithMany(r => r.Days)
+                .HasForeignKey(d => d.AvailabilityRuleId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
 
     }
 }
