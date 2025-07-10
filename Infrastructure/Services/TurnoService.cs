@@ -186,4 +186,29 @@ public class TurnoService : ITurnoService
         await _context.SaveChangesAsync();
     }
 
+
+    public async Task<List<TurnoResponseDTO>> GetAllTurnsBarber(int barberid)
+    {
+
+        var now = DateTime.UtcNow;
+
+        return await _context.Turnos
+            .Include(t => t.User)
+            .Include(t => t.Barber)
+            .Include(t => t.Service)
+            .Where(t => t.BarberId == barberid && t.TimeDate >= now)
+            .Select(t => new TurnoResponseDTO
+            {
+                Id = t.Id,
+                UserName = t.User.UserName,
+                UserEmail = t.User.UserEmail,
+                BarberName = t.Barber.Name,
+                ServiceName = t.Service.Name,
+                ServicePrice = t.Service.Price,
+                TimeDate = t.TimeDate,
+                Confirmed = t.Confirmed
+            })
+            .ToListAsync();
+    }
+
 }

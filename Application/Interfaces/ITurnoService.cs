@@ -23,5 +23,7 @@ namespace Application.Interfaces
         Task ConfirmTime(int UserId, int BarberId, DateTime time);
 
         Task CancelTime(int UserId, int BarberId, DateTime time);
+        Task<List<TurnoResponseDTO>> GetAllTurnsBarber(int barberid);
+
     }
 }
