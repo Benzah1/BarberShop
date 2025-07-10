@@ -117,7 +117,7 @@ namespace Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<DateTime>> GetAvailableTimeSlots(int barberId, DateTime date)
+        public async Task<List<DateTime>> GetAvailableTimeSlots(int barberId, DateTime date, int serviceId)
         {
             var dayOfWeek = date.DayOfWeek;
 
@@ -130,28 +130,43 @@ namespace Infrastructure.Services
             if (!rules.Any())
                 return new List<DateTime>(); // No hay reglas para ese día
 
-            // 2. Generar todos los slots posibles según las reglas
-            var possibleSlots = new List<DateTime>();
+            // 2. Obtener la duración del servicio
+            var service = await _context.Services.FindAsync(serviceId);
+            if (service == null)
+                throw new Exception("Servicio no encontrado");
+
+            var duration = TimeSpan.FromMinutes(service.DurationMinutes);
+
+            // 3. Obtener turnos ya reservados para ese día
+            var reservedSlots = await _context.Turnos
+                .Where(t => t.BarberId == barberId && t.TimeDate.Date == date.Date)
+                .Select(t => new { t.TimeDate, Duration = t.Service.DurationMinutes })
+                .ToListAsync();
+
+            // 4. Construir los posibles horarios y validar que no se solapen
+            var availableSlots = new List<DateTime>();
+
             foreach (var rule in rules)
             {
                 var currentTime = rule.StartTime;
-                while (currentTime + TimeSpan.FromMinutes(rule.IntervalMinutes) <= rule.EndTime)
+                while (currentTime + duration <= rule.EndTime)
                 {
-                    possibleSlots.Add(date.Date + currentTime);
+                    var proposedStart = date.Date + currentTime;
+                    var proposedEnd = proposedStart + duration;
+
+                    bool overlaps = reservedSlots.Any(r =>
+                    {
+                        var reservedStart = r.TimeDate;
+                        var reservedEnd = reservedStart + TimeSpan.FromMinutes(r.Duration);
+                        return proposedStart < reservedEnd && proposedEnd > reservedStart;
+                    });
+
+                    if (!overlaps)
+                        availableSlots.Add(proposedStart);
+
                     currentTime += TimeSpan.FromMinutes(rule.IntervalMinutes);
                 }
             }
-
-            // 3. Obtener los turnos ya reservados para ese día
-            var reservedSlots = await _context.Turnos
-                .Where(t => t.BarberId == barberId && t.TimeDate.Date == date.Date)
-                .Select(t => t.TimeDate)
-                .ToListAsync();
-
-            // 4. Filtrar solo los horarios que NO están reservados
-            var availableSlots = possibleSlots
-                .Where(slot => !reservedSlots.Contains(slot))
-                .ToList();
 
             return availableSlots;
         }

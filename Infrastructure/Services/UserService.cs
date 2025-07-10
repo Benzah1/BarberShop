@@ -50,7 +50,7 @@ namespace Infrastructure.Services
 
 
             profile.UserName = dto.UserName;
-            profile.UserEmail = dto.UserEmail;
+            
 
             _context.Users.Update(profile);
             await _context.SaveChangesAsync();

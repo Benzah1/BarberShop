@@ -48,11 +48,11 @@ public class BarberAvailabilityController : ControllerBase
         return Ok("Regla de disponibilidad eliminada correctamente");
     }
 
-    // GET: api/BarberAvailability/barber/5/slots?date=2025-07-20
-    [HttpGet("barber/{barberId}/slots")]
-    public async Task<IActionResult> GetAvailableSlots(int barberId, [FromQuery] DateTime date)
+
+    [HttpGet("disponibles")]
+    public async Task<IActionResult> GetAvailableSlots([FromQuery]int barberId, [FromQuery] DateTime date, [FromQuery]int serviceId)
     {
-        var slots = await _availabilityService.GetAvailableTimeSlots(barberId, date);
+        var slots = await _availabilityService.GetAvailableTimeSlots(barberId, date, serviceId);
         return Ok(slots);
     }
 }

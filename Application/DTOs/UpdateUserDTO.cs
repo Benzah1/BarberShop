@@ -9,7 +9,7 @@ namespace Application.DTOs
     public class UpdateUserDTO
     {
         public string UserName { get; set; } = null!;
-        public string UserEmail { get; set; } = null!;
+        
 
     }
 }

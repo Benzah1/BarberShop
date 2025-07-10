@@ -21,8 +21,10 @@ namespace Application.Interfaces
         // Eliminar una regla de disponibilidad
         Task DeleteAvailabilityRule(int ruleId);
 
-        Task<List<DateTime>> GetAvailableTimeSlots(int barberId, DateTime date);
-        
+        Task<List<DateTime>> GetAvailableTimeSlots(int barberId, DateTime date, int serviceId);
+
+
+
 
     }
 }
