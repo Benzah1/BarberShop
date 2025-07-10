@@ -47,6 +47,13 @@ public class AuthController : ControllerBase
         return Ok("✅ ¡Correo verificado correctamente!");
     }
 
+    [HttpPost("resend-verification")]
+    public async Task<IActionResult> ResendVerificationCode([FromBody] string email)
+    {
+        await _authService.ResendVerificationCode(email);
+        return Ok("Código reenviado con éxito.");
+    }
+
 
 }
 

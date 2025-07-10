@@ -10,10 +10,12 @@ namespace Infrastructure.Services;
 public class TurnoService : ITurnoService
 {
     private readonly TurnoContext _context;
+    private readonly IEmailService _emailService;
 
-    public TurnoService(TurnoContext context)
+    public TurnoService(TurnoContext context, IEmailService emailService)
     {
         _context = context;
+        _emailService = emailService;
     }
 
     public async Task<List<TurnoResponseDTO>> GetAllTurns()
@@ -69,21 +71,57 @@ public class TurnoService : ITurnoService
         if (exists)
             throw new BadRequestException("Esta Hora ya fue tomada. Por favor elija otra");
 
+        // Obtener datos adicionales del barbero y servicio
+        var barber = await _context.Barbers.FindAsync(dto.BarberId);
+        var service = await _context.Services.FindAsync(dto.ServiceId);
+        var user = await _context.Users.FindAsync(dto.UserId);
 
-        
+        if (barber == null || service == null || user == null)
+            throw new NotFoundException("Datos inválidos al crear el turno");
 
         var turno = new Turno
         {
-           UserId = dto.UserId,
+            UserId = dto.UserId,
             BarberId = dto.BarberId,
             ServiceId = dto.ServiceId,
             TimeDate = dto.TimeDate,
-            Confirmed = dto.Confirmed
+            Confirmed = false
         };
 
         _context.Turnos.Add(turno);
         await _context.SaveChangesAsync();
+
+        // Enlaces de confirmación y cancelación simulados
+        var confirmationLink = $"http://localhost:5010/api/turnos/confirm?UserId={dto.UserId}&BarberId={dto.BarberId}&time={dto.TimeDate:O}";
+        var cancellationLink = $"http://localhost:5010/api/turnos/Canceling?UserId={dto.UserId}&BarberId={dto.BarberId}&time={dto.TimeDate:O}";
+
+        var subject = "📅 Confirmación de hora - BarberShop";
+        var body = $@"
+        <h2>¡Hola {user.UserName}!</h2>
+        <p>Gracias por reservar con <strong>BarberShop</strong>.</p>
+        <p><strong>Tu cita:</strong></p>
+        <ul>
+            <li><strong>Barbero:</strong> {barber.Name}</li>
+            <li><strong>Servicio:</strong> {service.Name}</li>
+            <li><strong>Precio:</strong> ${service.Price}</li>
+            <li><strong>Fecha y hora:</strong> {dto.TimeDate:dddd dd MMMM yyyy HH:mm}</li>
+        </ul>
+        <p>
+            ✅ <a href='{confirmationLink}'>Confirmar</a> &nbsp;&nbsp;
+            ❌ <a href='{cancellationLink}'>Cancelar</a>
+        </p>
+        <hr/>
+        <p style='font-size:small;'>Equipo BarberShop</p>
+        ";
+
+        await _emailService.SendEmail(new EmailDTO
+        {
+            To = user.UserEmail,
+            Subject = subject,
+            Body = body
+        });
     }
+
 
     public async Task UpdateTurn(int id, TurnoDTO dto)
     {
@@ -109,4 +147,43 @@ public class TurnoService : ITurnoService
         _context.Turnos.Remove(turno);
         await _context.SaveChangesAsync();
     }
+
+
+    public async Task ConfirmTime(int UserId, int BarberId, DateTime time)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+
+        if (user == null)
+            throw new NotFoundException("Usuario no encontrado");
+
+        var turn = await _context.Turnos.FirstOrDefaultAsync(t => t.BarberId == BarberId && t.TimeDate == time);
+
+        if (turn == null)
+            throw new NotFoundException("Turno no encontrado");
+
+        if (turn.Confirmed)
+            throw new BadRequestException("Esta hora ya fue confirmada");
+
+        turn.Confirmed = true;
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task CancelTime(int UserId, int BarberId, DateTime time)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == UserId);
+
+        if (user == null)
+            throw new NotFoundException("Usuario no encontrado");
+
+        var turn = await _context.Turnos.FirstOrDefaultAsync(t => t.BarberId == BarberId && t.TimeDate == time);
+
+        if (turn == null)
+            throw new NotFoundException("Turno no encontrado");
+
+
+        _context.Turnos.Remove(turn);
+        await _context.SaveChangesAsync();
+    }
+
 }

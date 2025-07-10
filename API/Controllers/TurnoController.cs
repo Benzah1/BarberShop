@@ -54,4 +54,18 @@ public class TurnosController : ControllerBase
         await _turnoService.DeleteTurn(id);
         return Ok("Su hora se ha cancelado correctamente");
     }
+
+    [HttpGet("Confirm")]
+    public async Task<IActionResult> ConfirmTimes([FromQuery] int UserId, [FromQuery] int BarberId, [FromQuery] DateTime time)
+    {
+        await _turnoService.ConfirmTime(UserId, BarberId, time);
+        return Ok("La hora se a confirmado Correctamente");
+    }
+
+    [HttpGet("Canceling")]
+    public async Task<IActionResult> CancelingTimes([FromQuery] int UserId, [FromQuery] int BarberId, [FromQuery] DateTime time)
+    {
+        await _turnoService.CancelTime(UserId, BarberId, time);
+        return Ok("La hora se a cancelado Correctamente");
+    }
 }

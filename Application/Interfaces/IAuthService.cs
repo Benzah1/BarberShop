@@ -13,5 +13,6 @@ namespace Application.Interfaces
 
         Task<string> LoginUser(LoginDTO dto);
         Task ConfirmEmail(string email, string code);
+        Task ResendVerificationCode(string email);
     }
 }

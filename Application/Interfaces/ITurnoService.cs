@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
@@ -18,5 +19,9 @@ namespace Application.Interfaces
 
         // Eliminar un turno por su ID
         Task DeleteTurn(int id);
+
+        Task ConfirmTime(int UserId, int BarberId, DateTime time);
+
+        Task CancelTime(int UserId, int BarberId, DateTime time);
     }
 }

@@ -133,4 +133,36 @@ public class AuthService : IAuthService
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task ResendVerificationCode(string email)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserEmail == email);
+        if (user == null)
+            throw new NotFoundException("Usuario no encontrado.");
+
+        if (user.EmailConfirmed)
+            throw new BadRequestException("El correo ya ha sido confirmado.");
+
+        // Generar nuevo código
+        var newCode = Guid.NewGuid().ToString().Substring(0, 6);
+        user.EmailVerificationCode = newCode;
+        user.EmailVerificationExpiry = DateTime.UtcNow.AddMinutes(15);
+
+        await _context.SaveChangesAsync();
+
+        var subject = "🔁 Nuevo código de verificación";
+        var body = $@"
+        <h2>¡Hola {user.UserName}!</h2>
+        <p>Tu nuevo código de verificación es:</p>
+        <h3 style='color:#2e86de'>{newCode}</h3>
+        <p>Este código expira en 15 minutos.</p>";
+
+        await _emailService.SendEmail(new EmailDTO
+        {
+            To = email,
+            Subject = subject,
+            Body = body
+        });
+    }
+
 }
